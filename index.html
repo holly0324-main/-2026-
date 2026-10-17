@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#151317">
+  <meta name="description" content="デュエキング FOREVER 2026の4コン・特殊レア所持数チェッカー">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="デュエキング26">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <link rel="icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./styles.css">
+  <title>デュエキング2026 4コンチェッカー</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="title-row">
+        <div>
+          <p id="eyebrow" class="eyebrow">DM26-EX4 / 通常版99種</p>
+          <h1>デュエキング2026 4コン</h1>
+        </div>
+        <button id="moreButton" class="icon-button" type="button" aria-label="カード種別・データメニュー" aria-expanded="false">•••</button>
+      </div>
+
+      <section class="summary" aria-label="進捗">
+        <div class="summary-main">
+          <strong id="completionText">0 / 99</strong>
+          <span id="completionLabel">4コン完成</span>
+        </div>
+        <div class="progress-track" aria-hidden="true">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+        <div class="summary-sub">
+          <span id="ownedSummary">ストレージ <b>0</b> / 396</span>
+          <span id="missingSummary">不足 <b>396</b>枚</span>
+        </div>
+      </section>
+
+      <div id="dataMenu" class="data-menu" hidden>
+        <div class="category-menu">
+          <p class="menu-label">表示するカード</p>
+          <div class="category-grid" role="group" aria-label="カード種別を切り替える">
+            <button class="category-button" data-category="normal" type="button" aria-pressed="true">
+              <strong>通常版</strong><small>99種</small>
+            </button>
+            <button class="category-button" data-category="max" type="button" aria-pressed="false">
+              <strong>MAX</strong><small>50種</small>
+            </button>
+            <button class="category-button" data-category="secret" type="button" aria-pressed="false">
+              <strong>シク</strong><small>25種</small>
+            </button>
+            <button class="category-button" data-category="gold" type="button" aria-pressed="false">
+              <strong>ゴールドMAX</strong><small>12種</small>
+            </button>
+          </div>
+        </div>
+        <div class="menu-divider"></div>
+        <button id="exportButton" class="menu-action" type="button">バックアップを書き出す</button>
+        <label class="file-label menu-action" for="importInput">バックアップを読み込む</label>
+        <input id="importInput" type="file" accept="application/json,.json" hidden>
+        <a class="source-link" href="https://dm.takaratomy.co.jp/product/dm26ex4/" target="_blank" rel="noopener">カード画像：デュエル・マスターズ公式 ↗</a>
+      </div>
+    </header>
+
+    <main id="main" class="main-content">
+      <section id="checkView" class="view" aria-labelledby="checkTab">
+        <div class="helper-row">
+          <p id="helperText">画像タップで拡大。<b>所持数をタップで +1枚</b>。</p>
+          <div class="helper-actions">
+            <button id="checkIncompleteButton" class="text-button" type="button">未完成へ</button>
+            <div class="mode-picker">
+              <button id="inputModeButton" class="mode-toggle" type="button" aria-haspopup="menu" aria-expanded="false">
+                <span id="inputModeButtonLabel">所持数</span><span class="mode-caret" aria-hidden="true">▾</span>
+              </button>
+              <div id="inputModeMenu" class="mode-menu" role="menu" hidden>
+                <button class="mode-option" data-input-mode="owned" type="button" role="menuitemradio" aria-checked="true">
+                  <span class="mode-option-mark">✓</span><span>所持数</span>
+                </button>
+                <button class="mode-option" data-input-mode="planned" type="button" role="menuitemradio" aria-checked="false">
+                  <span class="mode-option-mark">✓</span><span>注文予定</span>
+                </button>
+                <button class="mode-option" data-input-mode="deck" type="button" role="menuitemradio" aria-checked="false">
+                  <span class="mode-option-mark">✓</span><span>デッキ使用</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="cardList" class="card-list"></div>
+      </section>
+
+      <section id="missingView" class="view" aria-labelledby="missingTab" hidden>
+        <div class="missing-toolbar">
+          <div id="missingSegments" class="segmented" role="group" aria-label="不足カードの絞り込み">
+            <button class="segment active" data-missing-filter="incomplete" type="button">4コン不足</button>
+            <button class="segment" data-missing-filter="zero" type="button">保管0枚</button>
+          </div>
+          <p id="missingListSummary" class="missing-list-summary"></p>
+        </div>
+        <div id="missingList" class="missing-list"></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="メインメニュー">
+      <button id="checkTab" class="nav-button active" data-view="check" type="button" aria-current="page">
+        <span class="nav-icon">✓</span>
+        <span>チェック</span>
+      </button>
+      <button id="missingTab" class="nav-button" data-view="missing" type="button">
+        <span class="nav-icon">≡</span>
+        <span>不足リスト</span>
+        <span id="missingBadge" class="badge">99</span>
+      </button>
+    </nav>
+  </div>
+
+  <dialog id="imageDialog" class="image-dialog" aria-labelledby="imageDialogTitle">
+    <div class="image-dialog-panel">
+      <div class="image-dialog-head">
+        <div>
+          <p id="imageDialogNo" class="image-dialog-no"></p>
+          <h2 id="imageDialogTitle"></h2>
+        </div>
+        <button id="imageDialogClose" class="image-dialog-close" type="button" aria-label="画像を閉じる">×</button>
+      </div>
+      <div class="image-dialog-stage">
+        <img id="imageDialogImg" alt="" decoding="async">
+      </div>
+      <p class="image-dialog-source">画像：デュエル・マスターズ公式</p>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
